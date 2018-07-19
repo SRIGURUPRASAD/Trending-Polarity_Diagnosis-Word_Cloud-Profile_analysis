@@ -1,0 +1,80 @@
+################# No of tweets per day #################################
+tuser <- getUser("sachin_rt")
+mht<-userTimeline(tuser,n=50)
+data<-twListToDF(mht)
+g1<-subset(data,select=c(text,created))
+g1$created<-as.Date(as.POSIXct(g1$created))
+g2<-as.data.frame(table(g1$created))
+names(g2)<-c('Date','No of Tweets')
+p<-gvisLineChart(g2, options=list( width=500, height=300))
+
+
+################## Word Cloud #################################
+tuser <- getUser("sachin_rt")
+# mt<-mht
+mht<<-userTimeline(tuser,n=50)
+data <-mht
+data<-twListToDF(data)
+data<-as.data.frame(data$text)
+data <- sapply(data,function(row) iconv(row, "latin1", "ASCII", sub=""))
+news_corpus <- Corpus(VectorSource(data)) # a column of strings.
+corpus_clean <- tm_map(news_corpus, tolower)
+corpus_clean <- tm_map(corpus_clean, removeNumbers)
+corpus_clean <- tm_map(corpus_clean, removeWords,stopwords("english"))
+corpus_clean <- tm_map(corpus_clean, removePunctuation)
+corpus_clean <- tm_map(corpus_clean, stripWhitespace)
+corpus_clean <- tm_map(corpus_clean, trim)
+corpus_clean <- tm_map(news_corpus, content_transformer(tolower))
+tdm <- TermDocumentMatrix(corpus_clean)
+m <- as.matrix(tdm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+
+d1<-stopwords("en")
+d<-subset(d,!(word %in% d1))
+list1<-c("a","about","above","across","after","again","against","all","almost","alone","along","already","also","although","always","among","an","and","another","any","anybody","anyone","anything","anywhere","are","area","areas","around","as","ask","asked","asking","asks","at","away","b","back","backed","backing","backs","be","became","because","become","becomes","been","before","began","behind","being","beings","best","better","between","big","both","but","by","c","came","can","cannot","case","cases","certain","certainly","clear","clearly","come","could","d","did","differ","different","differently","do","does","done","down","downed","downing","downs","during","e","each","early","either","end","ended","ending","ends","enough","even","evenly","ever","every","everybody","everyone","everything","everywhere","f","face","faces","fact","facts","far","felt","few","find","finds","first","for","four","from","full","fully","further","furthered","furthering","furthers","g","gave","general","generally","get","gets","give","given","gives","go","going","good","goods","got","great","greater","greatest","group","grouped","grouping","groups","h","had","has","have","having","he","her","here","herself","high","higher","highest","him","himself","his","how","however","i","if","important","in","interest","interested","interesting","interests","into","is","it","its","itself","j","just","k","keep","keeps","kind","knew","know","known","knows","l","large","largely","last","later","latest","least","less","let","lets","like","likely","long","longer","longest","m","made","make","making","man","many","may","me","member","members","men","might","more","most","mostly","mr","mrs","much","must","my","myself","n","necessary","need","needed","needing","needs","never","new","newer","newest","next","no","nobody","non","noone","not","nothing","now","nowhere","number","numbers","o","of","off","often","old","older","oldest","on","once","one","only","open","opened","opening","opens","or","order","ordered","ordering","orders","other","others","our","out","over","p","part","parted","parting","parts","per","perhaps","place","places","point","pointed","pointing","points","possible","present","presented","presenting","presents","problem","problems","put","puts","q","quite","r","rather","really","right","room","rooms","s","said","same","saw","say","says","second","seconds","see","seem","seemed","seeming","seems","sees","several","shall","she","should","show","showed","showing","shows","side","sides","since","small","smaller","smallest","so","some","somebody","someone","something","somewhere","state","states","still","such","sure","t","take","taken","than","that","the","their","them","then","there","therefore","these","they","thing","things","think","thinks","this","those","though","thought","thoughts","three","through","thus","to","today","together","too","took","toward","turn","turned","turning","turns","two","u","under","until","up","upon","us","use","used","uses","v","very","w","want","wanted","wanting","wants","was","way","ways","we","well","wells","went","were","what","when","where","whether","which","while","who","whole","whose","why","will","with","within","without","work","worked","working","works","would","x","y","year","years","yet","you","young","younger","youngest","your","yours","z")
+stop1<-c("&amp;")
+d<-subset(d,!(word %in% stop1))
+d<-subset(d,!(word %in% list1))
+pal <- brewer.pal(9, "BuGn")
+pal <- pal[-(1:2)]
+
+png("wordcloud.png", width=1100, height=650)
+wordcloud(d$word,d$freq, scale = c(7,.12),rot.per=.30,
+          min.freq = 1, max.words=Inf,
+          colors=brewer.pal(8, "Dark2"))
+dev.off()
+
+############################ Recent Tweets ####################
+tuser <- getUser(enter_name)
+# mt<-mht
+mht<<-userTimeline(tuser,n=50)
+data<-twListToDF(mht)
+g1<-subset(data,select=c(text,created))
+g1$created<-as.Date(as.POSIXct(g1$created))
+g1<-g1[order(g1$created,decreasing = T),]
+g2<-as.data.frame(head(g1$text,5))
+names(g2)<-'Recent Tweets'
+g2$'Recent Tweets'<-as.character(g2$'Recent Tweets')
+g2<-as.data.frame(g2)
+
+
+################# User Recent Favourites ####################
+tuser <- getUser(enter_name)
+fav = favorites(tuser, n=5)
+if(length(fav)==0){
+  return()
+}else{
+  data<-twListToDF(fav)
+  b1<-as.data.frame(as.character(data$text))
+  names(b1)<-c('User Recent Favourites')
+  b1<-as.data.frame(b1)
+}
+
+############## known about latest trend based on word ##################
+enter_name<-'#rajini'
+g1 <- searchTwitter(enter_name)
+g2<-twListToDF(g1)
+g3<-(g2$text)
+names(g3)<-'Recent tweets from worldwide'
+g3<-as.data.frame(g3)
