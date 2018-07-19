@@ -1,0 +1,132 @@
+require(httr)
+require(devtools)
+require(twitteR)
+require(base64enc)
+# library(httr)
+library(plotly)
+
+library(wordcloud)
+library(RColorBrewer)
+library(plyr)
+library(ggplot2)
+library(sentiment)
+library(googleVis)
+
+
+api_key <- "vJuri3g7B4tmW63j9WFjnHUyj"
+api_secret <- "fiwmIpTfibyeJhLM05U5eNjbPAZ7954mtTdPo5UiuVPQeKMClN"
+access_token <- "2196451472-KjI0yo3308XOZajWBGEqF4DJ28sRXsBFxf2KFtS"
+access_token_secret <- "WvXTyuyHbGrq82Z3KYYOe5oAW5poMfs51zGgiOiltag3i"
+origop <- options("httr_oauth_cache")
+options(httr_oauth_cache=TRUE)
+setup_twitter_oauth(api_key,api_secret,access_token,access_token_secret)
+options(httr_oauth_cache=origop)
+
+userInfo<-function(USER){
+  temp<-getUser(USER)
+  USERdata<-c(USER,temp$name,temp$getDescription(),temp$favoritesCount,temp$statusesCount,temp$followersCount,temp$friendsCount,temp$url,temp$protected,temp$verified,temp$screenName,temp$location,temp$lang,temp$id,temp$lastStatus,temp$listedCount,temp$followRequestSent,temp$profileImageUrl)
+  return(USERdata)
+}
+output1<-userInfo('imvkohli')
+output2<-twListToDF(output1)
+userInfo('barackobama')
+userInfo('narendramodi')
+
+
+
+
+
+################### For Trending ####################################
+
+n1<-c("Worldwide","Winnipeg","Ottawa","Quebec","Montreal","Toronto","Edmonton","Calgary","Vancouver","Birmingham","Blackpool","Bournemouth","Brighton","Bristol","Cardiff","Coventry","Derby","Edinburgh","Glasgow","Hull","Leeds","Leicester","Liverpool","Manchester","Middlesbrough","Newcastle","Nottingham","Plymouth","Portsmouth","Preston","Sheffield","Stoke-on-Trent","Swansea","London","Belfast","Santo Domingo","Guatemala City","Acapulco","Aguascalientes","Chihuahua","Mexico City","Ciudad Juarez","Nezahualc?yotl","Culiac?n","Ecatepec de Morelos","Guadalajara","Hermosillo","Le?n","M?rida","Mexicali","Monterrey","Morelia","Naucalpan de Ju?rez","Puebla","Quer?taro","Saltillo","San Luis Potos?","Tijuana","Toluca","Zapopan","Mendoza","Santiago","Concepcion","Valparaiso","Bogot?","Cali","Medell?n","Barranquilla","Quito","Guayaquil","Caracas","Maracaibo","Maracay","Valencia","Barcelona","Ciudad Guayana","Turmero","Lima","Bras?lia","Bel?m","Belo Horizonte","Curitiba","Porto Alegre","Recife","Rio de Janeiro","Salvador","S?o Paulo","Campinas","Fortaleza","Goi?nia","Manaus","S?o Lu?s","Guarulhos","C?rdoba","Rosario","Barquisimeto","Matur?n","Buenos Aires","Gdansk","Krak?w","Lodz","Poznan","Warsaw","Wroclaw","Vienna","Cork","Dublin","Galway","Bordeaux","Lille","Lyon","Marseille","Montpellier","Nantes","Paris","Rennes","Strasbourg","Toulouse","Berlin","Bremen","Dortmund","Dresden","Dusseldorf","Essen","Frankfurt","Hamburg","Cologne","Leipzig","Munich","Stuttgart","Bologna","Genoa","Milan","Naples","Palermo","Rome","Turin","Den Haag","Amsterdam","Rotterdam","Utrecht","Bilbao","Las Palmas","Madrid","Malaga","Murcia","Palma","Seville","Zaragoza","Geneva","Lausanne","Zurich","Brest","Grodno","Gomel","Minsk","Riga","Bergen","Oslo","Gothenburg","Stockholm","Dnipropetrovsk","Donetsk","Kharkiv","Kyiv","Lviv","Odesa","Zaporozhye","Athens","Thessaloniki","Bekasi","Depok","Pekanbaru","Surabaya","Makassar","Bandung","Jakarta","Medan","Palembang","Semarang","Tangerang","Singapore","Perth","Adelaide","Brisbane","Canberra","Darwin","Melbourne","Sydney","Kitakyushu","Saitama","Chiba","Fukuoka","Hamamatsu","Hiroshima","Kawasaki","Kobe","Kumamoto","Nagoya","Niigata","Sagamihara","Sapporo","Sendai","Takamatsu","Tokyo","Yokohama","Goyang","Yongin","Ansan","Bucheon","Busan","Changwon","Daegu","Gwangju","Incheon","Seongnam","Suwon","Ulsan","Seoul","Kajang","Ipoh","Johor Bahru","Klang","Kuala Lumpur","Calocan","Makati","Pasig","Taguig","Antipolo","Cagayan de Oro","Cebu City","Davao City","Manila","Quezon City","Zamboanga City","Bangkok","Hanoi","Hai Phong","Can Tho","Da Nang","Ho Chi Minh City","Algiers","Accra","Kumasi","Benin City","Ibadan","Kaduna","Kano","Lagos","Port Harcourt","Giza","Cairo","Alexandria","Mombasa","Nairobi","Durban","Johannesburg","Port Elizabeth","Pretoria","Soweto","Cape Town","Medina","Dammam","Riyadh","Jeddah","Mecca","Sharjah","Abu Dhabi","Dubai","Haifa","Tel Aviv","Jerusalem","Amman","Chelyabinsk","Khabarovsk","Krasnodar","Krasnoyarsk","Samara","Voronezh","Yekaterinburg","Irkutsk","Kazan","Moscow","Nizhny Novgorod","Novosibirsk","Omsk","Perm","Rostov-on-Don","Saint Petersburg","Ufa","Vladivostok","Volgograd","Karachi","Lahore","Multan","Rawalpindi","Faisalabad","Muscat","Nagpur","Lucknow","Kanpur","Patna","Ranchi","Kolkata","Srinagar","Amritsar","Jaipur","Ahmedabad","Rajkot","Surat","Bhopal","Indore","Thane","Mumbai","Pune","Hyderabad","Bangalore","Chennai","Mersin","Adana","Ankara","Antalya","Bursa","Diyarbakir","Eskisehir","Gaziantep","Istanbul","Izmir","Kayseri","Konya","Okinawa","Daejeon","Auckland","Albuquerque","Atlanta","Austin","Baltimore","Baton Rouge","Boston","Charlotte","Chicago","Cincinnati","Cleveland")
+n2<-c("Colorado Springs","Columbus","Dallas-Ft. Worth","Denver","Detroit","El Paso","Fresno","Greensboro","Harrisburg","Honolulu","Houston","Indianapolis","Jackson","Jacksonville","Kansas City","Las Vegas","Long Beach","Los Angeles","Louisville","Memphis","Mesa","Miami","Milwaukee","Minneapolis","Nashville","New Haven","New Orleans","New York","Norfolk","Oklahoma City","Omaha","Orlando","Philadelphia","Phoenix","Pittsburgh","Portland","Providence","Raleigh","Richmond","Sacramento","St. Louis","Salt Lake City","San Antonio","San Diego","San Francisco","San Jose","Seattle","Tallahassee","Tampa","Tucson","Virginia Beach","Washington","Osaka","Kyoto","Delhi","United Arab Emirates","Algeria","Argentina","Australia","Austria","Bahrain","Belgium","Belarus","Brazil","Canada","Chile","Colombia","Denmark","Dominican Republic","Ecuador","Egypt","Ireland","France","Ghana","Germany","Greece","Guatemala","Indonesia","India","Israel","Italy","Japan","Jordan","Kenya","Korea","Kuwait","Lebanon","Latvia","Oman","Mexico","Malaysia","Nigeria","Netherlands","Norway","New Zealand","Peru","Pakistan","Poland","Panama","Portugal","Qatar","Philippines","Puerto Rico","Russia","Saudi Arabia","South Africa","Spain","Sweden","Switzerland","Thailand","Turkey","United Kingdom","Ukraine","United States","Venezuela","Vietnam","Petaling","Hulu Langat","Ahsa","Okayama")
+n1<-as.data.frame(n1)
+names(n1)<-c('Names')
+n2<-as.data.frame(n2)
+names(n2)<-c('Names')
+names<-as.data.frame((rbind(n1,n2)))
+s1<-data.frame(c("1","2972","3369","3444","3534","4118","8676","8775","9807","12723","12903","13383","13911","13963","15127","17044","18114","19344","21125","25211","26042","26062","26734","28218","28869","30079","30720","32185","32452","32566","34503","36240","36758","44418","44544","76456","83123","110978","111579","115958","116545","116556","116564","117994","118466","124162","124785","131068","133327","133475","134047","134091","134395","137612","138045","141272","144265","149361","149769","151582","332471","349859","349860","349861","368148","368149","368150","368151","375732","375733","395269","395270","395271","395272","395273","395275","395277","418440","455819","455820","455821","455822","455823","455824","455825","455826","455827","455828","455830","455831","455833","455834","455867","466861","466862","468382","468384","468739","493417","502075","505120","514048","523920","526363","551801","560472","560743","560912","580778","608105","609125","610264","612977","613858","615702","619163","627791","628886","638242","641142","645458","645686","646099","648820","650272","656958","667931","671072","676757","698064","711080","716085","718345","719258","719846","721943","725003","726874","727232","733075","734047","754542","764814","766273","766356","768026","769293","774508","779063","782538","783058","784794","824382","825848","825978","834463","854823","857105","862592","890869","906057","918981","919163","922137","924938","924943","929398","939628","946738","963291","1030077","1032539","1040779","1044316","1046138","1047180","1047378","1047908","1048059","1048324","1048536","1062617","1098081","1099805","1100661","1100968","1101597","1103816","1105779","1110809","1116753","1117034","1117099","1117155","1117227","1117502","1117545","1117605","1117817","1117881","1118072","1118108","1118129","1118285","1118370","1118550","1130853","1132094","1132444","1132445","1132447","1132449","1132466","1132481","1132496","1132559","1132567","1132578","1132599","1141268","1154679","1154698","1154726","1154781","1167715","1180689","1187115","1195098","1198785","1199002","1199079","1199136","1199477","1199682","1199980","1225448","1236594","1236690","1252351","1252376","1252431","1253079","1326075","1330595","1387660","1393672","1396439","1396803","1398823","1404447","1521643","1521894","1522006","1528335","1528488","1580913","1582504","1586614","1586638","1587677","1591691","1937801","1939574","1939753","1939873","1939897","1940119","1940330","1940345","1967449","1968212","1968222","1968902","1997422","2018708","2028717","2029043","2077746","2108210","2112237","2121040","2121267","2122265","2122471","2122541","2122641","2122814","2123177","2123260","2124045","2124288","2124298","2211096","2211177","2211269","2211387","2211574","2268284","2282863","2295377","2295378","2295381","2295383","2295386","2295387","2295388","2295401","2295402","2295404","2295405","2295407","2295408","2295410","2295411","2295412","2295414","2295420","2295424","2323778","2343678","2343732","2343733","2343843","2343932","2343980","2343999","2344116","2344117","2344174","2344210","2345896","2345975","2348079","2352824","2357024","2357536","2358820","2359991","2367105","2378426","2379574","2380358","2381475"))
+s2<-data.frame(c("2383489","2383660","2388929","2391279","2391585","2397816","2407517","2414469","2418046","2423945","2424766","2427032","2428184","2428344","2430683","2436704","2441472","2442047","2442327","2449323","2449808","2450022","2451822","2452078","2457170","2458410","2458833","2459115","2460389","2464592","2465512","2466256","2471217","2471390","2473224","2475687","2477058","2478307","2480894","2486340","2486982","2487610","2487796","2487889","2487956","2488042","2490383","2503713","2503863","2508428","2512636","2514815","15015370","15015372","20070458","23424738","23424740","23424747","23424748","23424750","23424753","23424757","23424765","23424768","23424775","23424782","23424787","23424796","23424800","23424801","23424802","23424803","23424819","23424824","23424829","23424833","23424834","23424846","23424848","23424852","23424853","23424856","23424860","23424863","23424868","23424870","23424873","23424874","23424898","23424900","23424901","23424908","23424909","23424910","23424916","23424919","23424922","23424923","23424924","23424925","23424930","23424934","23424935","23424936","23424938","23424942","23424950","23424954","23424957","23424960","23424969","23424975","23424976","23424977","23424982","23424984","56013632","56013645","56120136","90036018"))
+names(s1)<-'woeid'
+names(s2)<-'woeid'
+id<-as.data.frame(rbind(s1,s2))
+location<-as.data.frame(cbind(names,id))
+enter_name<-"Chennai"
+R1<-subset(location,Names==enter_name)
+if(nrow(R1)==0){
+  enter_name<-capitalize(enter_name)
+  R1<-subset(location,Names==enter_name)
+  woe<-as.numeric(as.character(R1$woeid))
+}else{
+  woe<-as.numeric(as.character(R1$woeid))
+}
+t1 <- getTrends("2295424")
+t2<-as.data.frame(head(t1$name))
+
+names(t2)<-c('Current Trending')
+t2$'Current Trending'<-as.character(t2$'Current Trending')
+
+
+################ Polarity Analysis ###################################
+raj <- userTimeline("sachin_rt", n=50)
+mht<-raj
+bjp_txt = sapply(mht, function(x) x$getText())
+bjp_txt = gsub("(RT|via)((?:\\b\\W*@\\w+)+)","", bjp_txt)
+bjp_txt = gsub("@\\w+", "", bjp_txt)
+bjp_txt = gsub("[[:punct:]]", "", bjp_txt)
+bjp_txt = gsub("[[:digit:]]", "", bjp_txt)
+bjp_txt = gsub("http\\w+", "", bjp_txt)
+bjp_txt = gsub("[ \t]{2,}","", bjp_txt)
+bjp_txt = gsub("^\\s+|\\s+$","", bjp_txt)
+catch.error = function(x)
+{
+  y = NA
+  catch_error = tryCatch(tolower(x), error=function(e) e)
+  if (!inherits(catch_error, "error"))
+    y = tolower(x)
+  return(y)
+}
+bjp_txt = sapply(bjp_txt, catch.error)
+bjp_txt = bjp_txt[!is.na(bjp_txt)]
+names(bjp_txt) = NULL
+bjp_class_emo = classify_emotion(bjp_txt, algorithm="bayes", prior=1.0)
+emotion = bjp_class_emo[,7]
+emotion[is.na(emotion)] = "unknown"
+bjp_class_pol = classify_polarity(bjp_txt, algorithm="bayes")
+polarity = bjp_class_pol[,4]
+sentiment_dataframe = data.frame(text=bjp_txt, emotion=emotion, polarity=polarity, stringsAsFactors=FALSE)
+next_time <<- within(sentiment_dataframe, emotion <- factor(emotion, levels=names(sort(table(emotion), decreasing=TRUE))))
+
+
+
+##################### Word Count ###########################
+
+tuser <- getUser("sachin_rt")
+# mt<-mht
+mht<<-userTimeline(tuser,n=50)
+data <-mht
+data<-twListToDF(data)
+data<-as.data.frame(data$text)
+data <- sapply(data,function(row) iconv(row, "latin1", "ASCII", sub=""))
+news_corpus <- Corpus(VectorSource(data)) # a column of strings.
+corpus_clean <- tm_map(news_corpus, tolower)
+corpus_clean <- tm_map(corpus_clean, removeNumbers)
+corpus_clean <- tm_map(corpus_clean, removeWords,stopwords("english"))
+corpus_clean <- tm_map(corpus_clean, removePunctuation)
+corpus_clean <- tm_map(corpus_clean, stripWhitespace)
+corpus_clean <- tm_map(corpus_clean, trim)
+corpus_clean <- tm_map(news_corpus, content_transformer(tolower))
+tdm <- TermDocumentMatrix(corpus_clean)
+m <- as.matrix(tdm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+d1<-stopwords("en")
+d<-subset(d,!(word %in% d1))
+list1<-c("a","about","above","across","after","again","against","all","almost","alone","along","already","also","although","always","among","an","and","another","any","anybody","anyone","anything","anywhere","are","area","areas","around","as","ask","asked","asking","asks","at","away","b","back","backed","backing","backs","be","became","because","become","becomes","been","before","began","behind","being","beings","best","better","between","big","both","but","by","c","came","can","cannot","case","cases","certain","certainly","clear","clearly","come","could","d","did","differ","different","differently","do","does","done","down","downed","downing","downs","during","e","each","early","either","end","ended","ending","ends","enough","even","evenly","ever","every","everybody","everyone","everything","everywhere","f","face","faces","fact","facts","far","felt","few","find","finds","first","for","four","from","full","fully","further","furthered","furthering","furthers","g","gave","general","generally","get","gets","give","given","gives","go","going","good","goods","got","great","greater","greatest","group","grouped","grouping","groups","h","had","has","have","having","he","her","here","herself","high","higher","highest","him","himself","his","how","however","i","if","important","in","interest","interested","interesting","interests","into","is","it","its","itself","j","just","k","keep","keeps","kind","knew","know","known","knows","l","large","largely","last","later","latest","least","less","let","lets","like","likely","long","longer","longest","m","made","make","making","man","many","may","me","member","members","men","might","more","most","mostly","mr","mrs","much","must","my","myself","n","necessary","need","needed","needing","needs","never","new","newer","newest","next","no","nobody","non","noone","not","nothing","now","nowhere","number","numbers","o","of","off","often","old","older","oldest","on","once","one","only","open","opened","opening","opens","or","order","ordered","ordering","orders","other","others","our","out","over","p","part","parted","parting","parts","per","perhaps","place","places","point","pointed","pointing","points","possible","present","presented","presenting","presents","problem","problems","put","puts","q","quite","r","rather","really","right","room","rooms","s","said","same","saw","say","says","second","seconds","see","seem","seemed","seeming","seems","sees","several","shall","she","should","show","showed","showing","shows","side","sides","since","small","smaller","smallest","so","some","somebody","someone","something","somewhere","state","states","still","such","sure","t","take","taken","than","that","the","their","them","then","there","therefore","these","they","thing","things","think","thinks","this","those","though","thought","thoughts","three","through","thus","to","today","together","too","took","toward","turn","turned","turning","turns","two","u","under","until","up","upon","us","use","used","uses","v","very","w","want","wanted","wanting","wants","was","way","ways","we","well","wells","went","were","what","when","where","whether","which","while","who","whole","whose","why","will","with","within","without","work","worked","working","works","would","x","y","year","years","yet","you","young","younger","youngest","your","yours","z")
+stop1<-c("&amp;")
+d<-subset(d,!(word %in% stop1))
+d<-subset(d,!(word %in% list1))
+rownames(d)<-NULL
+d<-head(d,10)
+final_out<-as.data.frame(d)
+names(final_out)<-c('Word','Count')
